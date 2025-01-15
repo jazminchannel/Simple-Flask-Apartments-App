@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apartments</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1, h2 { color: #333; }
+        ul { list-style-type: none; padding: 0; }
+        li { margin: 10px 0; }
+        form { margin-top: 20px; }
+        label { display: block; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Available Apartments</h1>
+    <ul>
+        {% for apartment in apartments %}
+        <li>
+            <strong>{{ apartment.name }}</strong> - ${{ apartment.price }}
+        </li>
+        {% endfor %}
+    </ul>
+
+    <h2>Add a New Apartment</h2>
+    <form action="/apartments" method="post" onsubmit="return submitForm(event)">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price" required>
+        <button type="submit">Add Apartment</button>
+    </form>
+
+    <script>
+        async function submitForm(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+            const response = await fetch('/apartments', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (response.ok) {
+                alert('Apartment added successfully!');
+                location.reload();
+            } else {
+                const error = await response.json();
+                alert(`Error: ${error.description}`);
+            }
+        }
+    </script>
+</body>
+</html>
